@@ -327,167 +327,28 @@ main.page-shell { padding: 22px 0 68px; }
 }
 </style>
 <style id="bilingual-line-compare-style">
-/* ===== 句子划线 · 中英文对照（离线增强） ===== */
-.line-compare-mode .bilingual-line-sentence {
-  cursor: pointer;
-  border-radius: 4px;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-  transition: background-color .15s ease, box-shadow .15s ease;
+/* ===== 直接划线 · 中英文原位联动 =====
+   电脑：先选中文字，再右键。
+   iPhone/iPad：长按并调整系统选区，选区稳定后自动划线。
+   再次选择已划内容执行相同操作即可取消。无模式按钮、无弹窗。 */
+.bilingual-line-sentence {
+  -webkit-user-select: text;
+  user-select: text;
 }
-.line-compare-mode .bilingual-line-sentence:hover,
-.line-compare-mode .bilingual-line-sentence:focus-visible {
-  background: rgba(183, 143, 45, .11);
-  box-shadow: 0 0 0 2px rgba(183, 143, 45, .08);
-  outline: none;
-}
-.bilingual-line-sentence.line-marked {
-  background-image: linear-gradient(to bottom, transparent 76%, rgba(204, 158, 43, .38) 76%, rgba(204, 158, 43, .38) 91%, transparent 91%);
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-}
-.bilingual-line-sentence.line-current {
-  background-color: rgba(255, 236, 169, .40);
-  box-shadow: 0 0 0 3px rgba(204, 158, 43, .12);
-}
-.line-mode-hint {
-  display: none;
-  margin: -4px 0 14px;
-  padding: 10px 13px;
-  border: 1px solid #e3d6ad;
-  border-radius: 11px;
-  background: #fffaf0;
-  color: #675b3d;
-  font-size: 13px;
-  line-height: 1.65;
-}
-.line-compare-mode .line-mode-hint { display: block; }
-.line-count-badge {
-  min-width: 19px;
-  height: 19px;
-  padding: 0 6px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #ede7d3;
-  color: #665932;
-  font-size: 11px;
-  font-weight: 800;
-}
-.tool-btn.active .line-count-badge { background: rgba(255,255,255,.22); color: #fff; }
-.line-compare-tray {
-  position: fixed;
-  left: 50%;
-  bottom: max(12px, env(safe-area-inset-bottom));
-  transform: translateX(-50%);
-  z-index: 120;
-  width: min(980px, calc(100% - 24px));
-  max-height: min(48vh, 430px);
-  overflow: auto;
-  border: 1px solid #d8cfb3;
-  border-radius: 17px;
-  background: rgba(255, 253, 247, .98);
-  box-shadow: 0 22px 58px rgba(33, 39, 38, .22);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-.line-compare-tray.hidden { display: none !important; }
-.line-tray-head {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 14px;
-  border-bottom: 1px solid #e5ddc5;
-  background: rgba(255, 253, 247, .96);
-}
-.line-tray-location { min-width: 0; }
-.line-tray-location strong { display: block; font-size: 14px; color: #4d4634; }
-.line-tray-location span { display: block; margin-top: 2px; color: #81765b; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.line-tray-actions { display: flex; gap: 6px; flex-shrink: 0; }
-.line-tray-btn {
-  border: 1px solid #d7ceb3;
-  border-radius: 8px;
-  background: #fff;
-  padding: 6px 9px;
-  cursor: pointer;
-  color: #554c34;
-  font-size: 12px;
-}
-.line-tray-btn:hover { background: #fff8e8; }
-.line-tray-btn.danger { color: #8a4f45; }
-.line-pair-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-}
-.line-pair-side { padding: 15px 17px 17px; min-width: 0; }
-.line-pair-side + .line-pair-side { border-left: 1px solid #e5ddc5; }
-.line-pair-label { margin-bottom: 8px; color: #8b7844; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-.line-pair-en { font-family: Georgia, "Times New Roman", serif; font-size: 18px; line-height: 1.75; color: #263138; }
-.line-pair-zh { font-size: 16px; line-height: 1.85; color: #3d484e; }
-.line-compare-tray .target { pointer-events: none; }
-.line-list-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 130;
-  display: grid;
-  place-items: center;
-  padding: 18px;
-  background: rgba(20, 27, 27, .46);
-}
-.line-list-modal.hidden { display: none !important; }
-.line-list-dialog {
-  width: min(880px, 100%);
-  max-height: min(82vh, 760px);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: 18px;
-  background: #fffdf8;
-  box-shadow: 0 28px 80px rgba(20, 27, 27, .30);
-}
-.line-list-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 15px 17px;
-  border-bottom: 1px solid #e3dcc8;
-}
-.line-list-head h2 { margin: 0; font-size: 18px; }
-.line-list-head-actions { display: flex; gap: 7px; }
-.line-list-body { overflow: auto; padding: 13px; display: grid; gap: 10px; }
-.line-list-empty { padding: 34px 18px; text-align: center; color: var(--muted); }
-.line-list-item { border: 1px solid #e2dbc7; border-radius: 13px; overflow: hidden; background: #fff; }
-.line-list-item-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 11px; background: #fbf8ef; border-bottom: 1px solid #ece5d2; }
-.line-list-item-top span { color: #796d50; font-size: 12px; }
-.line-list-item-actions { display: flex; gap: 6px; }
-.line-list-text { display: grid; grid-template-columns: 1fr 1fr; }
-.line-list-text > div { padding: 11px 13px; line-height: 1.65; }
-.line-list-text > div + div { border-left: 1px solid #ece5d2; }
-.line-list-en { font-family: Georgia, "Times New Roman", serif; }
-.line-list-zh { color: #485359; }
-.line-flash { animation: lineFlash 1.5s ease; }
-@keyframes lineFlash { 0%,100% { background-color: transparent; } 25%,70% { background-color: rgba(255,226,116,.52); } }
-@media (max-width: 720px) {
-  .line-compare-tray { width: calc(100% - 14px); bottom: max(7px, env(safe-area-inset-bottom)); max-height: 56vh; border-radius: 14px; }
-  .line-tray-head { align-items: flex-start; padding: 10px 11px; }
-  .line-tray-actions { flex-wrap: wrap; justify-content: flex-end; }
-  .line-pair-grid, .line-list-text { grid-template-columns: 1fr; }
-  .line-pair-side { padding: 12px 13px 14px; }
-  .line-pair-side + .line-pair-side, .line-list-text > div + div { border-left: 0; border-top: 1px solid #e5ddc5; }
-  .line-pair-en { font-size: 17px; }
-  .line-pair-zh { font-size: 15px; }
-  .line-list-modal { padding: 8px; }
-  .line-list-dialog { max-height: 91vh; border-radius: 14px; }
+.line-user-mark,
+.line-user-mark * {
+  text-decoration-line: underline !important;
+  text-decoration-style: solid !important;
+  text-decoration-color: rgba(177, 128, 24, .92) !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 4px !important;
+  text-decoration-skip-ink: auto;
 }
 @media print {
-  .line-compare-tray, .line-list-modal, #lineCompareBtn, #lineReviewBtn, .line-mode-hint { display: none !important; }
+  .line-user-mark,
+  .line-user-mark * {
+    text-decoration-color: #8a671d !important;
+  }
 }
 </style>
 </head>
@@ -3161,43 +3022,23 @@ main.page-shell { padding: 22px 0 68px; }
 <script id="bilingual-line-compare-script">
 (() => {
   'use strict';
+
   const YEAR = '2011';
-  const STORAGE_KEY = `ky-bilingual-lines-${YEAR}-v1`;
-  const ALIGNMENT_OVERRIDES = {"t2m2":[0,0,1,2],"t2p1":[0,0,1,2,3]};
-  const markedPairs = new Set();
-  const pairMeta = new Map();
-  let compareMode = false;
-  let currentPair = null;
-  let selectionHandledAt = 0;
+  const STORAGE_KEY = `ky-direct-bilingual-lines-${YEAR}-v2`;
+  const ALIGNMENT_OVERRIDES = {};
+  const sentenceMeta = new Map();
+  let marks = [];
+  let mobileTimer = 0;
+  let suppressSelectionUntil = 0;
 
   const $ = (s, r=document) => r.querySelector(s);
   const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
-  const escapeHtml = (s) => String(s ?? '').replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+  const normalizeText = s => String(s || '').replace(/\s+/g, ' ').trim();
+  const isTouchLike = () => {
+    try { return matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0; }
+    catch (_) { return 'ontouchstart' in window; }
+  };
 
-  function toast(message) {
-    const existing = $('#toast');
-    if (existing) {
-      existing.textContent = message;
-      existing.classList.remove('hidden');
-      clearTimeout(toast._t);
-      toast._t = setTimeout(() => existing.classList.add('hidden'), 1900);
-      return;
-    }
-    console.info(message);
-  }
-
-  function loadMarks() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      const arr = raw ? JSON.parse(raw) : [];
-      if (Array.isArray(arr)) arr.forEach(x => markedPairs.add(String(x)));
-    } catch (_) {}
-  }
-  function saveMarks() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...markedPairs])); } catch (_) {}
-  }
-
-  function normalizeText(text) { return String(text || '').replace(/\s+/g, ' ').trim(); }
   function isEnglishAbbreviation(text, index) {
     const before = text.slice(Math.max(0, index - 12), index + 1);
     if (/(?:\b(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|St|No|vs|etc)\.)$/i.test(before)) return true;
@@ -3206,10 +3047,11 @@ main.page-shell { padding: 22px 0 68px; }
     if (index > 0 && index + 1 < text.length && /\d/.test(text[index-1]) && /\d/.test(text[index+1])) return true;
     return false;
   }
+
   function sentenceBounds(text, lang) {
     const out = [];
     let start = 0;
-    const closers = lang === 'zh' ? '”’\"》〉）】〕}' : '”’\"»)]}';
+    const closers = lang === 'zh' ? '”’"》〉）】〕}' : '”’"»)]}';
     const punctuation = lang === 'zh' ? /[。！？]/ : /[.!?]/;
     for (let i = 0; i < text.length; i++) {
       const ch = text[i];
@@ -3218,7 +3060,6 @@ main.page-shell { padding: 22px 0 68px; }
       let j = i + 1;
       while (j < text.length && closers.includes(text[j])) j++;
       if (lang === 'zh') {
-        // 引号内的感叹号后紧接逗号，不视为整句结束，例如：“好哇！”，随后……
         if (j < text.length && /[，,、；;]/.test(text[j])) continue;
       } else {
         let k = j;
@@ -3238,29 +3079,27 @@ main.page-shell { padding: 22px 0 68px; }
 
   function locateTextOffset(root, offset) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    let node;
-    let used = 0;
-    let last = null;
+    let node, used = 0, last = null;
     while ((node = walker.nextNode())) {
       last = node;
       const len = node.nodeValue.length;
-      if (offset <= used + len) return { node, offset: Math.max(0, offset - used) };
+      if (offset <= used + len) return {node, offset: Math.max(0, offset - used)};
       used += len;
     }
-    return last ? { node: last, offset: last.nodeValue.length } : { node: root, offset: 0 };
+    return last ? {node:last, offset:last.nodeValue.length} : null;
   }
 
   function wrapSentences(paragraph, lang) {
-    if (!paragraph || paragraph.dataset.lineWrapped === '1') return [];
+    if (!paragraph) return [];
+    if (paragraph.dataset.lineWrapped === '1') return $$('.bilingual-line-sentence', paragraph);
     const text = paragraph.textContent || '';
     const bounds = sentenceBounds(text, lang);
     const spans = [];
-    // 从后往前处理，避免后段抽取改变前段节点位置。
     for (let i = bounds.length - 1; i >= 0; i--) {
       const [start, end] = bounds[i];
       const a = locateTextOffset(paragraph, start);
       const b = locateTextOffset(paragraph, end);
-      if (!a.node || !b.node) continue;
+      if (!a || !b) continue;
       try {
         const range = document.createRange();
         range.setStart(a.node, a.offset);
@@ -3268,7 +3107,6 @@ main.page-shell { padding: 22px 0 68px; }
         const span = document.createElement('span');
         span.className = 'bilingual-line-sentence';
         span.dataset.lineSentenceIndex = String(i);
-        span.tabIndex = 0;
         span.appendChild(range.extractContents());
         range.insertNode(span);
         spans.unshift(span);
@@ -3278,16 +3116,7 @@ main.page-shell { padding: 22px 0 68px; }
     return spans;
   }
 
-  function moduleLabel(module) {
-    const textCard = module.closest('.text-card');
-    const textName = textCard?.querySelector(':scope > .text-summary strong')?.textContent?.trim() || 'Text';
-    const modName = module.querySelector(':scope > .module-summary .module-title-wrap strong')?.textContent?.trim() || '剧情';
-    const badge = module.querySelector(':scope > .module-summary .module-index')?.textContent?.trim() || '';
-    return { short: `${YEAR} ${textName} · ${badge}`, title: modName };
-  }
-
-  function initializePairs() {
-    let order = 0;
+  function initializeSentences() {
     $$('.story-module').forEach(module => {
       const moduleId = module.id || module.dataset.module;
       const enP = module.querySelector('.english-story');
@@ -3298,270 +3127,451 @@ main.page-shell { padding: 22px 0 68px; }
       const override = ALIGNMENT_OVERRIDES[moduleId];
       const enToZh = Array.isArray(override) && override.length === en.length
         ? override
-        : en.map((_, i) => en.length === zh.length ? i : Math.min(zh.length - 1, Math.floor(i * Math.max(1, zh.length) / Math.max(1, en.length))));
-      const label = moduleLabel(module);
-      zh.forEach((span, zi) => {
-        const pair = `${moduleId}::${zi}`;
-        span.dataset.linePair = pair;
-        span.dataset.lineSide = 'zh';
-        if (!pairMeta.has(pair)) pairMeta.set(pair, { pair, moduleId, order: order++, label });
+        : en.map((_, i) => en.length === zh.length
+          ? i
+          : Math.min(Math.max(0, zh.length - 1), Math.floor(i * Math.max(1, zh.length) / Math.max(1, en.length))));
+
+      const enIds = en.map((node, i) => {
+        const id = `${moduleId}:en:${i}`;
+        node.dataset.lineSentenceId = id;
+        node.dataset.lineSide = 'en';
+        sentenceMeta.set(id, {id, node, side:'en', moduleId, index:i, counterpartIds:[]});
+        return id;
       });
-      en.forEach((span, ei) => {
-        const zi = Math.max(0, Math.min(zh.length - 1, Number(enToZh[ei] ?? ei)));
-        const pair = `${moduleId}::${zi}`;
-        span.dataset.linePair = pair;
-        span.dataset.lineSide = 'en';
-        if (!pairMeta.has(pair)) pairMeta.set(pair, { pair, moduleId, order: order++, label });
+      const zhIds = zh.map((node, i) => {
+        const id = `${moduleId}:zh:${i}`;
+        node.dataset.lineSentenceId = id;
+        node.dataset.lineSide = 'zh';
+        sentenceMeta.set(id, {id, node, side:'zh', moduleId, index:i, counterpartIds:[]});
+        return id;
       });
-      const hint = document.createElement('div');
-      hint.className = 'line-mode-hint';
-      hint.textContent = '划线对照已开启：点击一句英文或中文，或拖选句中内容，即可同时标出对应句并打开中英文对照。';
-      module.querySelector('.module-content')?.prepend(hint);
+
+      enIds.forEach((enId, ei) => {
+        if (!zhIds.length) return;
+        const zi = Math.max(0, Math.min(zhIds.length - 1, Number(enToZh[ei] ?? ei)));
+        const zhId = zhIds[zi];
+        sentenceMeta.get(enId).counterpartIds = [zhId];
+        sentenceMeta.get(zhId).counterpartIds.push(enId);
+      });
     });
   }
 
-  function pairNodes(pair, side) {
-    const sel = `.bilingual-line-sentence[data-line-pair="${CSS.escape(pair)}"]${side ? `[data-line-side="${side}"]` : ''}`;
-    return $$(sel);
-  }
-  function pairText(pair, side) {
-    return pairNodes(pair, side).map(n => normalizeText(n.textContent)).join(side === 'en' ? ' ' : '');
-  }
-  function pairHtml(pair, side) {
-    return pairNodes(pair, side).map(n => n.innerHTML).join(side === 'en' ? ' ' : '');
-  }
-
-  function applyMarkedClasses() {
-    $$('.bilingual-line-sentence').forEach(n => n.classList.toggle('line-marked', markedPairs.has(n.dataset.linePair)));
-    updateCount();
-  }
-  function updateCount() {
-    const count = markedPairs.size;
-    const badge = $('#lineMarkCount');
-    if (badge) badge.textContent = String(count);
-    const titleCount = $('#lineListTitleCount');
-    if (titleCount) titleCount.textContent = String(count);
+  function loadMarks() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(parsed)) {
+        marks = parsed.filter(m => m && Array.isArray(m.segments)).map(m => ({
+          id: String(m.id || `${Date.now()}-${Math.random()}`),
+          segments: m.segments
+            .filter(s => s && sentenceMeta.has(String(s.sentenceId)))
+            .map(s => ({sentenceId:String(s.sentenceId), start:Number(s.start)||0, end:Number(s.end)||0}))
+        })).filter(m => m.segments.length);
+      }
+    } catch (_) { marks = []; }
   }
 
-  function openAncestors(node) {
-    let p = node;
-    while (p) {
-      if (p.tagName === 'DETAILS') p.open = true;
-      p = p.parentElement;
+  function saveMarks() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(marks)); } catch (_) {}
+  }
+
+  function unwrapRenderedMarks() {
+    $$('.line-user-mark').forEach(span => {
+      const parent = span.parentNode;
+      if (!parent) return;
+      while (span.firstChild) parent.insertBefore(span.firstChild, span);
+      span.remove();
+      parent.normalize();
+    });
+  }
+
+  function mergedIntervalsForSentence(sentenceId) {
+    const intervals = [];
+    marks.forEach(mark => mark.segments.forEach(seg => {
+      if (seg.sentenceId !== sentenceId) return;
+      if (seg.end > seg.start) intervals.push([seg.start, seg.end]);
+    }));
+    intervals.sort((a,b) => a[0]-b[0] || a[1]-b[1]);
+    const merged = [];
+    for (const cur of intervals) {
+      const last = merged[merged.length - 1];
+      if (!last || cur[0] > last[1]) merged.push(cur.slice());
+      else last[1] = Math.max(last[1], cur[1]);
     }
-    const translation = node.closest('.story-module')?.querySelector('.translation');
+    return merged;
+  }
+
+  function wrapTextNodeSlice(node, start, end) {
+    if (!node || start >= end) return;
+    let target = node;
+    if (end < target.nodeValue.length) target.splitText(end);
+    if (start > 0) target = target.splitText(start);
+    const span = document.createElement('span');
+    span.className = 'line-user-mark';
+    target.parentNode.insertBefore(span, target);
+    span.appendChild(target);
+  }
+
+  function renderSentenceIntervals(meta, intervals) {
+    if (!meta?.node || !intervals.length) return;
+    const textNodes = [];
+    const walker = document.createTreeWalker(meta.node, NodeFilter.SHOW_TEXT);
+    let n, pos = 0;
+    while ((n = walker.nextNode())) {
+      const start = pos;
+      const end = start + n.nodeValue.length;
+      textNodes.push({node:n, start, end});
+      pos = end;
+    }
+    const ops = [];
+    for (const [a,b] of intervals) {
+      for (const t of textNodes) {
+        const s = Math.max(a, t.start);
+        const e = Math.min(b, t.end);
+        if (e > s) ops.push({node:t.node, start:s-t.start, end:e-t.start, globalStart:s});
+      }
+    }
+    ops.sort((x,y) => y.globalStart - x.globalStart);
+    for (const op of ops) {
+      if (!op.node.isConnected) continue;
+      wrapTextNodeSlice(op.node, op.start, op.end);
+    }
+  }
+
+  function renderMarks() {
+    unwrapRenderedMarks();
+    for (const [id, meta] of sentenceMeta) {
+      const intervals = mergedIntervalsForSentence(id);
+      if (intervals.length) renderSentenceIntervals(meta, intervals);
+    }
+  }
+
+  function pointOffset(root, node, offset) {
+    try {
+      const r = document.createRange();
+      r.selectNodeContents(root);
+      r.setEnd(node, offset);
+      return r.toString().length;
+    } catch (_) { return null; }
+  }
+
+  function elementOffset(root, el) {
+    try {
+      const r = document.createRange();
+      r.selectNodeContents(root);
+      r.setEndBefore(el);
+      const start = r.toString().length;
+      return {start, end:start + (el.textContent || '').length};
+    } catch (_) { return null; }
+  }
+
+  function anchorKey(el, side, ordinals) {
+    const exact = side === 'en' ? el.dataset.entryId : el.dataset.entryIdZh;
+    if (exact) return `id:${exact}`;
+    const word = String(el.dataset.word || '').toLowerCase();
+    if (!word) return null;
+    const idx = ordinals.get(word) || 0;
+    ordinals.set(word, idx + 1);
+    return `word:${word}:${idx}`;
+  }
+
+  function anchorsFor(meta) {
+    const ordinals = new Map();
+    const out = [];
+    meta.node.querySelectorAll('.target').forEach(el => {
+      const off = elementOffset(meta.node, el);
+      const key = anchorKey(el, meta.side, ordinals);
+      if (off && key) out.push({...off, key});
+    });
+    return out;
+  }
+
+  function snapEnglish(text, pos, isStart) {
+    pos = Math.max(0, Math.min(text.length, Math.round(pos)));
+    if (isStart) {
+      while (pos > 0 && /[A-Za-z0-9'’-]/.test(text[pos-1] || '') && /[A-Za-z0-9'’-]/.test(text[pos] || '')) pos--;
+    } else {
+      while (pos < text.length && /[A-Za-z0-9'’-]/.test(text[pos-1] || '') && /[A-Za-z0-9'’-]/.test(text[pos] || '')) pos++;
+    }
+    return pos;
+  }
+
+  function trimOffsets(text, start, end) {
+    while (start < end && /\s/.test(text[start])) start++;
+    while (end > start && /\s/.test(text[end-1])) end--;
+    return [start, end];
+  }
+
+  function wordSegments(text, lang) {
+    try {
+      const locale = lang === 'zh' ? 'zh' : 'en';
+      return [...new Intl.Segmenter(locale, {granularity:'word'}).segment(text)]
+        .filter(x => x.isWordLike)
+        .map(x => ({start:x.index, end:x.index + x.segment.length}));
+    } catch (_) {
+      const out = [];
+      const re = lang === 'zh' ? /[\\p{Script=Han}]+|[A-Za-z0-9]+/gu : /[A-Za-z0-9'’-]+/g;
+      let m;
+      while ((m = re.exec(text))) out.push({start:m.index, end:m.index + m[0].length});
+      return out;
+    }
+  }
+
+  function projectedBoundary(srcText, srcA, srcB, srcPos, srcLang, tgtText, tgtA, tgtB, tgtLang) {
+    if (srcB <= srcA) return tgtA;
+    const srcGap = srcText.slice(srcA, srcB);
+    const tgtGap = tgtText.slice(tgtA, tgtB);
+    const rel = Math.max(0, Math.min(srcGap.length, srcPos - srcA));
+    const srcWords = wordSegments(srcGap, srcLang);
+    const tgtWords = wordSegments(tgtGap, tgtLang);
+
+    // 如果选区边界正好落在词与词之间，优先按“词的相对位置”投影。
+    // 中英字符长度差异很大，按字符比例容易把“largely”映成“了大体”。
+    if (srcWords.length && tgtWords.length) {
+      const inside = srcWords.some(w => rel > w.start && rel < w.end);
+      if (!inside) {
+        const before = srcWords.filter(w => w.end <= rel).length;
+        const frac = before / srcWords.length;
+        const idx = Math.max(0, Math.min(tgtWords.length, Math.round(frac * tgtWords.length)));
+        if (idx === 0) return tgtA;
+        if (idx === tgtWords.length) return tgtB;
+        return tgtA + tgtWords[idx].start;
+      }
+    }
+
+    const ratio = Math.max(0, Math.min(1, rel / Math.max(1, srcGap.length)));
+    return tgtA + ratio * (tgtB - tgtA);
+  }
+
+  function mapRangeBetween(sourceMeta, targetMeta, start, end) {
+    const srcText = sourceMeta.node.textContent || '';
+    const tgtText = targetMeta.node.textContent || '';
+    [start, end] = trimOffsets(srcText, Math.max(0,start), Math.min(srcText.length,end));
+    if (end <= start) return null;
+
+    const srcAnchors = anchorsFor(sourceMeta);
+    const tgtAnchors = anchorsFor(targetMeta);
+    const tgtMap = new Map(tgtAnchors.map(a => [a.key, a]));
+    const mapped = srcAnchors.map(a => ({s:a, t:tgtMap.get(a.key)})).filter(x => x.t);
+    const selected = mapped.filter(x => x.s.end > start && x.s.start < end);
+
+    let tStart, tEnd;
+    if (selected.length) {
+      tStart = Math.min(...selected.map(x => x.t.start));
+      tEnd = Math.max(...selected.map(x => x.t.end));
+      const first = selected.slice().sort((a,b)=>a.s.start-b.s.start)[0];
+      const last = selected.slice().sort((a,b)=>a.s.end-b.s.end).at(-1);
+
+      if (start < first.s.start) {
+        // 边界插值分别取源文与译文中“视觉上最近”的前锚点；
+        // 这样遇到中英文词序倒置时，不会把被倒装的目标词一起误划进去。
+        const srcPrev = srcAnchors.filter(a => a.end <= first.s.start).sort((a,b)=>b.end-a.end)[0];
+        const tgtPrev = tgtAnchors.filter(a => a.end <= first.t.start).sort((a,b)=>b.end-a.end)[0];
+        const sA = srcPrev ? srcPrev.end : 0;
+        const tA = tgtPrev ? tgtPrev.end : 0;
+        if (first.s.start > sA && first.t.start >= tA) {
+          tStart = projectedBoundary(srcText, sA, first.s.start, start, sourceMeta.side, tgtText, tA, first.t.start, targetMeta.side);
+        }
+      }
+      if (end > last.s.end) {
+        const srcNext = srcAnchors.filter(a => a.start >= last.s.end).sort((a,b)=>a.start-b.start)[0];
+        const tgtNext = tgtAnchors.filter(a => a.start >= last.t.end).sort((a,b)=>a.start-b.start)[0];
+        const sB = srcNext ? srcNext.start : srcText.length;
+        const tB = tgtNext ? tgtNext.start : tgtText.length;
+        if (sB > last.s.end && tB >= last.t.end) {
+          tEnd = projectedBoundary(srcText, last.s.end, sB, end, sourceMeta.side, tgtText, last.t.end, tB, targetMeta.side);
+          // 英文尾部从句在中文里被提前时，后面常用逗号与主句分隔。
+          // 若源文已经选到句末、但译文后面还有一个倒序锚点，优先停在第一个分句标点。
+          if (!srcNext && tgtNext && end >= srcText.length - 1) {
+            const gap = tgtText.slice(last.t.end, tgtNext.start);
+            const m = gap.match(/[，,；;]/);
+            if (m && Number.isInteger(m.index)) {
+              const sourceEndedWithPunct = /[.!?。！？,，;；]/.test(srcText[Math.max(0, end - 1)] || '');
+              tEnd = last.t.end + m.index + (sourceEndedWithPunct ? 1 : 0);
+            }
+          }
+        }
+      }
+    } else {
+      const prev = mapped.filter(x => x.s.end <= start).sort((a,b)=>b.s.end-a.s.end)[0];
+      const next = mapped.filter(x => x.s.start >= end).sort((a,b)=>a.s.start-b.s.start)[0];
+      if (prev && next && prev.t.end <= next.t.start && prev.s.end < next.s.start) {
+        tStart = projectedBoundary(srcText, prev.s.end, next.s.start, start, sourceMeta.side, tgtText, prev.t.end, next.t.start, targetMeta.side);
+        tEnd = projectedBoundary(srcText, prev.s.end, next.s.start, end, sourceMeta.side, tgtText, prev.t.end, next.t.start, targetMeta.side);
+      } else {
+        tStart = srcText.length ? start / srcText.length * tgtText.length : 0;
+        tEnd = srcText.length ? end / srcText.length * tgtText.length : tgtText.length;
+      }
+    }
+
+    tStart = Math.max(0, Math.min(tgtText.length, Math.floor(tStart)));
+    tEnd = Math.max(tStart, Math.min(tgtText.length, Math.ceil(tEnd)));
+    if (targetMeta.side === 'en') {
+      tStart = snapEnglish(tgtText, tStart, true);
+      tEnd = snapEnglish(tgtText, tEnd, false);
+    }
+    [tStart, tEnd] = trimOffsets(tgtText, tStart, tEnd);
+    if (tEnd <= tStart) return null;
+    return {sentenceId:targetMeta.id, start:tStart, end:tEnd};
+  }
+
+  function selectionSegments() {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.rangeCount || !normalizeText(sel.toString())) return [];
+    const range = sel.getRangeAt(0);
+    const candidates = $$('.bilingual-line-sentence').filter(node => {
+      try { return range.intersectsNode(node); } catch (_) { return false; }
+    });
+    if (!candidates.length) return [];
+    const sides = new Set(candidates.map(n => n.dataset.lineSide));
+    if (sides.size !== 1) return [];
+    const side = candidates[0].dataset.lineSide;
+    const segments = [];
+    for (const node of candidates) {
+      const id = node.dataset.lineSentenceId;
+      const meta = sentenceMeta.get(id);
+      if (!meta || meta.side !== side) continue;
+      let start = 0, end = (node.textContent || '').length;
+      if (node.contains(range.startContainer)) {
+        const v = pointOffset(node, range.startContainer, range.startOffset);
+        if (v != null) start = v;
+      }
+      if (node.contains(range.endContainer)) {
+        const v = pointOffset(node, range.endContainer, range.endOffset);
+        if (v != null) end = v;
+      }
+      const text = node.textContent || '';
+      [start,end] = trimOffsets(text, Math.max(0,start), Math.min(text.length,end));
+      if (end > start) segments.push({sentenceId:id, start, end});
+    }
+    return segments;
+  }
+
+  function overlapRatio(aStart,aEnd,bStart,bEnd) {
+    const overlap = Math.max(0, Math.min(aEnd,bEnd) - Math.max(aStart,bStart));
+    const base = Math.min(aEnd-aStart, bEnd-bStart);
+    return base > 0 ? overlap/base : 0;
+  }
+
+  function marksMatchingSelection(seg) {
+    return marks.filter(mark => mark.segments.some(s =>
+      s.sentenceId === seg.sentenceId && overlapRatio(seg.start,seg.end,s.start,s.end) >= 0.72
+    ));
+  }
+
+  function removeMarksById(ids) {
+    const set = new Set(ids);
+    marks = marks.filter(m => !set.has(m.id));
+  }
+
+  function removeOverlappingSegments(segments) {
+    const ids = new Set();
+    for (const seg of segments) {
+      marks.forEach(mark => {
+        if (mark.segments.some(s => s.sentenceId === seg.sentenceId && Math.max(seg.start,s.start) < Math.min(seg.end,s.end))) ids.add(mark.id);
+      });
+    }
+    removeMarksById(ids);
+  }
+
+  function buildMarkFromSource(seg) {
+    const sourceMeta = sentenceMeta.get(seg.sentenceId);
+    if (!sourceMeta) return null;
+    const out = [{...seg}];
+    for (const targetId of sourceMeta.counterpartIds) {
+      const targetMeta = sentenceMeta.get(targetId);
+      if (!targetMeta) continue;
+      const mapped = mapRangeBetween(sourceMeta, targetMeta, seg.start, seg.end);
+      if (mapped) out.push(mapped);
+    }
+    const dedup = [];
+    const seen = new Set();
+    out.forEach(s => {
+      const key = `${s.sentenceId}:${s.start}:${s.end}`;
+      if (!seen.has(key)) { seen.add(key); dedup.push(s); }
+    });
+    return {id:`${Date.now()}-${Math.random().toString(36).slice(2,9)}`, segments:dedup};
+  }
+
+  function openTranslationsFor(seg) {
+    const meta = sentenceMeta.get(seg.sentenceId);
+    if (!meta) return;
+    const module = meta.node.closest('.story-module');
+    if (!module) return;
+    let p = module;
+    while (p) { if (p.tagName === 'DETAILS') p.open = true; p = p.parentElement; }
+    const translation = module.querySelector('.translation');
     if (translation) translation.open = true;
   }
 
-  function clearCurrent() {
-    $$('.bilingual-line-sentence.line-current').forEach(n => n.classList.remove('line-current'));
-  }
+  function commitCurrentSelection() {
+    if (Date.now() < suppressSelectionUntil) return false;
+    const selected = selectionSegments();
+    if (!selected.length) return false;
 
-  function showPair(pair, {mark=true, scroll=false}={}) {
-    if (!pair || !pairMeta.has(pair)) return;
-    currentPair = pair;
-    if (mark) {
-      markedPairs.add(pair);
-      saveMarks();
-      applyMarkedClasses();
-    }
-    clearCurrent();
-    const nodes = pairNodes(pair);
-    nodes.forEach(n => n.classList.add('line-current'));
-    const first = nodes[0];
-    if (first) openAncestors(first);
-    const meta = pairMeta.get(pair);
-    $('#lineTrayShort').textContent = meta.label.short;
-    $('#lineTrayTitle').textContent = meta.label.title;
-    $('#lineTrayEn').innerHTML = pairHtml(pair, 'en') || escapeHtml(pairText(pair, 'en'));
-    $('#lineTrayZh').innerHTML = pairHtml(pair, 'zh') || escapeHtml(pairText(pair, 'zh'));
-    $('#lineCompareTray').classList.remove('hidden');
-    if (scroll && first) {
-      first.scrollIntoView({behavior:'smooth', block:'center'});
-      first.classList.add('line-flash');
-      setTimeout(() => first.classList.remove('line-flash'), 1600);
-    }
-  }
-
-  function hideTray() {
-    $('#lineCompareTray')?.classList.add('hidden');
-    clearCurrent();
-    currentPair = null;
-  }
-
-  function removePair(pair) {
-    if (!pair) return;
-    markedPairs.delete(pair);
-    saveMarks();
-    applyMarkedClasses();
-    if (currentPair === pair) hideTray();
-    renderList();
-  }
-
-  function insertUI() {
-    const toolbar = $('.toolbar');
-    if (!toolbar || $('#lineCompareBtn')) return;
-    const bionic = $('#bionicBtn');
-    const modeBtn = document.createElement('button');
-    modeBtn.type = 'button';
-    modeBtn.className = 'tool-btn';
-    modeBtn.id = 'lineCompareBtn';
-    modeBtn.setAttribute('aria-pressed', 'false');
-    modeBtn.title = '点击或拖选一句，自动显示对应中英文';
-    modeBtn.textContent = '划线对照';
-    const listBtn = document.createElement('button');
-    listBtn.type = 'button';
-    listBtn.className = 'tool-btn';
-    listBtn.id = 'lineReviewBtn';
-    listBtn.innerHTML = '已划线 <span class="line-count-badge" id="lineMarkCount">0</span>';
-    if (bionic) {
-      bionic.insertAdjacentElement('afterend', listBtn);
-      bionic.insertAdjacentElement('afterend', modeBtn);
-    } else {
-      toolbar.append(modeBtn, listBtn);
-    }
-    document.body.insertAdjacentHTML('beforeend', `
-      <aside class="line-compare-tray hidden" id="lineCompareTray" aria-live="polite" aria-label="中英文划线对照">
-        <div class="line-tray-head">
-          <div class="line-tray-location"><strong id="lineTrayShort">划线对照</strong><span id="lineTrayTitle"></span></div>
-          <div class="line-tray-actions">
-            <button class="line-tray-btn" id="lineLocateBtn" type="button">定位</button>
-            <button class="line-tray-btn danger" id="lineRemoveBtn" type="button">取消划线</button>
-            <button class="line-tray-btn" id="lineTrayCloseBtn" type="button">关闭</button>
-          </div>
-        </div>
-        <div class="line-pair-grid">
-          <div class="line-pair-side"><div class="line-pair-label">English</div><div class="line-pair-en" id="lineTrayEn" lang="en"></div></div>
-          <div class="line-pair-side"><div class="line-pair-label">中文对照</div><div class="line-pair-zh" id="lineTrayZh"></div></div>
-        </div>
-      </aside>
-      <div class="line-list-modal hidden" id="lineListModal" aria-hidden="true">
-        <section class="line-list-dialog" role="dialog" aria-modal="true" aria-labelledby="lineListTitle">
-          <div class="line-list-head">
-            <h2 id="lineListTitle">已划线句子（<span id="lineListTitleCount">0</span>）</h2>
-            <div class="line-list-head-actions">
-              <button class="line-tray-btn danger" id="lineClearAllBtn" type="button">清空</button>
-              <button class="line-tray-btn" id="lineListCloseBtn" type="button">关闭</button>
-            </div>
-          </div>
-          <div class="line-list-body" id="lineListBody"></div>
-        </section>
-      </div>`);
-  }
-
-  function setCompareMode(on) {
-    compareMode = Boolean(on);
-    document.body.classList.toggle('line-compare-mode', compareMode);
-    const btn = $('#lineCompareBtn');
-    if (btn) {
-      btn.classList.toggle('active', compareMode);
-      btn.setAttribute('aria-pressed', compareMode ? 'true' : 'false');
-      btn.textContent = compareMode ? '结束划线' : '划线对照';
-    }
-    if (compareMode) toast('划线对照已开启：点击一句，或拖选句中内容');
-    else hideTray();
-  }
-
-  function pairFromEventTarget(target) {
-    return target?.closest?.('.bilingual-line-sentence')?.dataset?.linePair || null;
-  }
-
-  function handleSentenceActivation(event) {
-    if (!compareMode) return;
-    const sentence = event.target.closest('.bilingual-line-sentence');
-    if (!sentence) return;
-    if (Date.now() - selectionHandledAt < 350) return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    showPair(sentence.dataset.linePair, {mark:true});
-  }
-
-  function handleSelection() {
-    if (!compareMode) return;
-    const sel = window.getSelection();
-    if (!sel || sel.isCollapsed || !normalizeText(sel.toString())) return;
-    const range = sel.rangeCount ? sel.getRangeAt(0) : null;
-    if (!range) return;
-    const candidates = $$('.bilingual-line-sentence').filter(n => {
-      try { return range.intersectsNode(n); } catch (_) { return false; }
-    });
-    const pairs = [...new Set(candidates.map(n => n.dataset.linePair).filter(Boolean))];
-    if (!pairs.length) return;
-    selectionHandledAt = Date.now();
-    pairs.forEach(p => markedPairs.add(p));
-    saveMarks();
-    applyMarkedClasses();
-    showPair(pairs[0], {mark:false});
-    try { sel.removeAllRanges(); } catch (_) {}
-  }
-
-  function renderList() {
-    const body = $('#lineListBody');
-    if (!body) return;
-    const pairs = [...markedPairs].filter(p => pairMeta.has(p)).sort((a,b) => pairMeta.get(a).order - pairMeta.get(b).order);
-    updateCount();
-    if (!pairs.length) {
-      body.innerHTML = '<div class="line-list-empty">还没有划线。开启“划线对照”后，点击或拖选一句即可保存。</div>';
-      return;
-    }
-    body.innerHTML = pairs.map(pair => {
-      const m = pairMeta.get(pair);
-      return `<article class="line-list-item" data-list-pair="${escapeHtml(pair)}">
-        <div class="line-list-item-top"><span>${escapeHtml(m.label.short)} · ${escapeHtml(m.label.title)}</span><div class="line-list-item-actions"><button class="line-tray-btn" data-line-jump="${escapeHtml(pair)}" type="button">定位</button><button class="line-tray-btn danger" data-line-delete="${escapeHtml(pair)}" type="button">删除</button></div></div>
-        <div class="line-list-text"><div class="line-list-en" lang="en">${pairHtml(pair,'en')}</div><div class="line-list-zh">${pairHtml(pair,'zh')}</div></div>
-      </article>`;
-    }).join('');
-  }
-
-  function openList() {
-    renderList();
-    const modal = $('#lineListModal');
-    modal.classList.remove('hidden');
-    modal.setAttribute('aria-hidden','false');
-  }
-  function closeList() {
-    const modal = $('#lineListModal');
-    modal.classList.add('hidden');
-    modal.setAttribute('aria-hidden','true');
-  }
-
-  function bindEvents() {
-    $('#lineCompareBtn')?.addEventListener('click', () => setCompareMode(!compareMode));
-    $('#lineReviewBtn')?.addEventListener('click', openList);
-    $('#lineTrayCloseBtn')?.addEventListener('click', hideTray);
-    $('#lineRemoveBtn')?.addEventListener('click', () => removePair(currentPair));
-    $('#lineLocateBtn')?.addEventListener('click', () => currentPair && showPair(currentPair, {mark:false, scroll:true}));
-    $('#lineListCloseBtn')?.addEventListener('click', closeList);
-    $('#lineClearAllBtn')?.addEventListener('click', () => {
-      if (!markedPairs.size) return;
-      if (!confirm('清空全部已划线句子？')) return;
-      markedPairs.clear(); saveMarks(); applyMarkedClasses(); renderList(); hideTray();
-    });
-    $('#lineListModal')?.addEventListener('click', e => { if (e.target.id === 'lineListModal') closeList(); });
-    $('#lineListBody')?.addEventListener('click', e => {
-      const jump = e.target.closest('[data-line-jump]');
-      const del = e.target.closest('[data-line-delete]');
-      if (jump) { const pair=jump.dataset.lineJump; closeList(); showPair(pair,{mark:false,scroll:true}); }
-      if (del) removePair(del.dataset.lineDelete);
-    });
-    document.addEventListener('click', handleSentenceActivation, true);
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { hideTray(); closeList(); }
-      if ((e.key === 'Enter' || e.key === ' ') && compareMode) {
-        const pair = pairFromEventTarget(e.target);
-        if (pair) { e.preventDefault(); e.stopImmediatePropagation(); showPair(pair,{mark:true}); }
+    let changed = false;
+    for (const seg of selected) {
+      const matches = marksMatchingSelection(seg);
+      if (matches.length) {
+        removeMarksById(matches.map(m => m.id));
+        changed = true;
+        continue;
       }
+      const newMark = buildMarkFromSource(seg);
+      if (!newMark) continue;
+      removeOverlappingSegments(newMark.segments);
+      marks.push(newMark);
+      openTranslationsFor(seg);
+      changed = true;
+    }
+
+    if (changed) {
+      saveMarks();
+      renderMarks();
+      suppressSelectionUntil = Date.now() + 500;
+      try { window.getSelection()?.removeAllRanges(); } catch (_) {}
+    }
+    return changed;
+  }
+
+  function selectionIsInStory() {
+    const segs = selectionSegments();
+    return segs.length > 0;
+  }
+
+  function bindDesktopRightClick() {
+    document.addEventListener('contextmenu', event => {
+      if (isTouchLike()) return;
+      if (!selectionIsInStory()) return;
+      const sentence = event.target.closest?.('.bilingual-line-sentence');
+      if (!sentence) return;
+      const selectedIds = new Set(selectionSegments().map(s => s.sentenceId));
+      if (!selectedIds.has(sentence.dataset.lineSentenceId)) return;
+      event.preventDefault();
+      commitCurrentSelection();
     }, true);
-    document.addEventListener('mouseup', handleSelection);
-    document.addEventListener('touchend', () => setTimeout(handleSelection, 40), {passive:true});
+  }
+
+  function bindMobileLongSelection() {
+    if (!isTouchLike()) return;
+    document.addEventListener('selectionchange', () => {
+      clearTimeout(mobileTimer);
+      if (Date.now() < suppressSelectionUntil) return;
+      if (!selectionIsInStory()) return;
+      // 给 iOS 原生选区手柄留出调整时间；选区稳定后直接落线。
+      mobileTimer = setTimeout(() => {
+        if (selectionIsInStory()) commitCurrentSelection();
+      }, 1150);
+    }, {passive:true});
+    document.addEventListener('touchstart', () => clearTimeout(mobileTimer), {passive:true});
   }
 
   function init() {
-    insertUI();
-    initializePairs();
+    initializeSentences();
     loadMarks();
-    applyMarkedClasses();
-    bindEvents();
+    renderMarks();
+    bindDesktopRightClick();
+    bindMobileLongSelection();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true});
