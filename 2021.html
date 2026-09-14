@@ -52,14 +52,31 @@
 
 /* Optional contexts are not separate study items. */
 .core-examples{display:grid;gap:6px;margin:8px 0}.core-example{border:1px solid var(--line);border-radius:7px;padding:8px 10px;background:#fafcfb;text-align:left;font-size:13px;line-height:1.7}.core-example:hover{background:var(--soft)}.core-example small{display:block;color:var(--muted);font-size:11px}
+
+/* Unfamiliar-word marker: background only; original font color stays unchanged. */
+:root{--unfamiliar-bg:#FFF0B3;--unfamiliar-border:#D7BF6B}
+.unfamiliar-fill{background-color:var(--unfamiliar-bg)!important;border-radius:4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.vocab-label.unfamiliar-fill{box-shadow:3px 0 0 var(--unfamiliar-bg),-3px 0 0 var(--unfamiliar-bg)}
+.word-token.unfamiliar-fill .target{background-color:transparent}
+.card-actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.unfamiliar-toggle{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:35px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:7px 9px;font-size:12px;line-height:1.4;white-space:normal}
+.unfamiliar-toggle.active{background:var(--unfamiliar-bg);border-color:var(--unfamiliar-border)}
+.highlight-swatch{display:inline-block;width:11px;height:9px;flex:none;background:var(--unfamiliar-bg);border:1px solid var(--unfamiliar-border);border-radius:2px}
+.card-actions .unfamiliar-toggle{padding:7px 5px;gap:4px}
+.word-mark-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:0 0 13px}
+.word-mark-actions .context{margin:0}
+.unfamiliar-list-row{border:1px solid var(--line);border-radius:9px;padding:12px;margin:10px 0;display:flex;gap:12px;align-items:center;justify-content:space-between}
+.unfamiliar-list-word{font-family:Georgia,"Times New Roman",serif;font-size:22px;overflow-wrap:anywhere}
+.unfamiliar-list-row .actions{flex:none;margin:0}
+@media(max-width:560px){.card-actions .know,.card-actions .card-jump,.card-actions .unfamiliar-toggle{font-size:12px;padding:8px 4px;min-height:39px}.unfamiliar-list-row{align-items:flex-start;flex-wrap:wrap}.unfamiliar-list-row .actions{justify-content:flex-start}.word-mark-actions .unfamiliar-toggle{min-height:40px}}
 </style></head><body>
 <header class="wrap"><div class="hero"><div class="kicker">考研英语真题词汇 · 剧情串联记忆版</div><h1><span>2021</span> · 阅读核心卡片</h1><p class="sub">只背新增词的阅读核心；点击意思回到剧情，生词可以逐词划线。</p><div class="counts" id="counts"></div></div></header>
 <div class="bar"><div class="wrap"><div class="tools">
 <button class="btn active" id="ledgerTab">背诵台账</button><button class="btn" id="storiesTab">剧情阅读</button><span class="sep"></span>
 <label class="screen-reader" for="textFilter">选择 Text</label><select id="textFilter"><option value="0">全部 Text</option><option value="1">Text 1</option><option value="2">Text 2</option><option value="3">Text 3</option><option value="4">Text 4</option></select>
 <label class="screen-reader" for="query">搜索</label><input autocomplete="off" id="query" placeholder="搜索新词或查旧词" type="search"/><button class="btn" id="polyFilter" title="只看需要分别记住的明显不同核心，不按词性或译法细拆">多义</button><button class="btn" id="rareFilter">[僻]</button><button class="btn" id="hideMeaning">遮住词义</button>
-<button class="btn" id="randomAll">抽词</button><button class="btn" id="savedMarks">已划线</button>
-<details class="more-tools" id="moreTools"><summary>显示与备份</summary><div class="more-panel"><button class="btn small" id="bionicToggle">Bionic：开</button><button class="btn small" id="onlyEnglish">只看英文</button><button class="btn small" id="expandTranslations">展开翻译</button><button class="btn small" id="collapseTranslations">收起翻译</button><button class="btn small" id="randomPoly">只抽多义</button><button class="btn small" id="randomRare">只抽 [僻]</button><button class="btn small" id="exportState">备份进度与划线</button><button class="btn small" id="importState">恢复备份</button><input accept="application/json,.json" hidden="" id="importFile" type="file"/><button class="btn small" id="resetState">重置学习记录</button></div></details>
+<button class="btn" id="randomAll">抽词</button><button class="btn" id="savedMarks">已划线</button><button class="btn" id="unfamiliarList"><span class="highlight-swatch" aria-hidden="true"></span> 不熟单词 <span id="unfamiliarCount">0</span></button>
+<details class="more-tools" id="moreTools"><summary>显示与备份</summary><div class="more-panel"><button class="btn small" id="bionicToggle">Bionic：开</button><button class="btn small" id="onlyEnglish">只看英文</button><button class="btn small" id="expandTranslations">展开翻译</button><button class="btn small" id="collapseTranslations">收起翻译</button><button class="btn small" id="randomPoly">只抽多义</button><button class="btn small" id="randomRare">只抽 [僻]</button><button class="btn small" id="exportState">备份进度、划线与底色</button><button class="btn small" id="importState">恢复备份</button><input accept="application/json,.json" hidden="" id="importFile" type="file"/><button class="btn small" id="resetState">重置学习记录</button></div></details>
 <span class="progress" id="progress"></span></div></div></div>
 <main class="wrap"><section class="view active" id="ledgerView"><p class="intro">相对 2010—2020 去重，一词一卡。近义译法只记共同核心，明显不同的意思才分开；点击意思可回到对应剧情，不加箭头。遮住词义后，点卡片单独揭晓。</p><div id="ledgerArea"></div></section>
 <section class="view" id="storyView"><div class="back-row"><button class="btn" id="backToLedger">返回刚才的台账</button><p class="intro">电脑拖选后右键确认；手机长按拖选后点浮动菜单。选哪个词，就只划哪个词；浅色预览显示对应中文，确认前不保存。</p></div><div id="storyArea"></div></section>
@@ -118,7 +135,21 @@ for(const [gid,g] of G){
  }
 }
 for(const w of WORD.values())L.set(w.id,{id:w.id,en:w.text,zh:w.z.map(z=>G.get(z.g).zh.slice(z.a,z.b)).join(''),module:G.get(w.g).module,type:'word',group:w.g});
-const KEY='exam-vocab-2021-reading-core-word-v1';
+const UNFAMILIAR_INDEX=new Map(),TOKEN_UNFAMILIAR_REF=new Map(),TOKEN_VOCAB_REFS=new Map();
+for(const w of W.values())UNFAMILIAR_INDEX.set('v:'+w.key,{ref:'v:'+w.key,key:w.key,label:w.word,color:w.color,ids:[],jump:E.get(w.entryIds[0]).mainTarget});
+for(const token of WORD.values()){
+ const g=G.get(token.g),targets=g.enTargets.filter(t=>t.start<token.b&&t.end>token.a);
+ const exactTarget=targets.find(t=>t.start===token.a&&t.end===token.b);
+ const tokenNorm=String(token.text).toLowerCase().replace(/[^a-z0-9]/g,'');
+ const key=exactTarget?exactTarget.key:(W.has(tokenNorm)?tokenNorm:null);
+ const ref=key?'v:'+key:'t:'+token.text.toLowerCase();
+ TOKEN_UNFAMILIAR_REF.set(token.id,ref);
+ const refs=new Set(targets.map(t=>'v:'+t.key));if(key)refs.add(ref);TOKEN_VOCAB_REFS.set(token.id,refs);
+ if(!UNFAMILIAR_INDEX.has(ref))UNFAMILIAR_INDEX.set(ref,{ref,key:null,label:token.text,color:null,ids:[],jump:token.id});
+ for(const itemRef of new Set([ref,...refs])){const item=UNFAMILIAR_INDEX.get(itemRef);if(item&&!item.ids.includes(token.id))item.ids.push(token.id);}
+}
+const PREVIOUS_KEY='exam-vocab-2021-reading-core-word-v1';
+const KEY='exam-vocab-2021-reading-core-word-unfamiliar-v1';
 const CARD_KEYS=new Set(DATA.cardKeys);
 const YEAR=DATA.meta.year;
 let storageOK=true,stored={},migratedProgress=false,migrationNotice='';
@@ -126,6 +157,9 @@ function normalizeRecord(input){
  if(!input||typeof input!=='object'||Array.isArray(input))throw new Error('记录格式错误，未改变当前进度。');
  if(input.version!==DATA.meta.alignmentVersion)throw new Error('备份版本不匹配，未套用可能错位的划线。');
  for(const field of ['known','modules','marks'])if(!Array.isArray(input[field])||input[field].some(x=>typeof x!=='string'))throw new Error('学习或划线记录格式错误。');
+ const unfamiliar=input.unfamiliar===undefined?[]:input.unfamiliar;
+ if(!Array.isArray(unfamiliar)||unfamiliar.length>5000||unfamiliar.some(ref=>typeof ref!=='string'||!UNFAMILIAR_INDEX.has(ref)))throw new Error('不熟词底色记录不匹配，未改变当前进度。');
+ if(input.unfamiliarVersion!==undefined&&input.unfamiliarVersion!==1)throw new Error('不熟词底色版本不匹配，未改变当前进度。');
  const custom=input.overrides===undefined?{}:input.overrides;
  if(!custom||typeof custom!=='object'||Array.isArray(custom))throw new Error('自定义对应格式错误。');
  const overrides=Object.create(null);
@@ -134,17 +168,18 @@ function normalizeRecord(input){
   overrides[id]=zs.map(z=>({g:z.g,a:z.a,b:z.b}));
  }
  const marks=input.marks.filter(id=>WORD.has(id)||ZINFO.has(id));
- return {record:{version:DATA.meta.alignmentVersion,known:input.known.filter(k=>CARD_KEYS.has(k)),modules:input.modules.filter(k=>M.has(k)),marks,bionic:input.bionic!==false,overrides},note:'备份已恢复。'};
+ return {record:{version:DATA.meta.alignmentVersion,unfamiliar:[...new Set(unfamiliar)],known:input.known.filter(k=>CARD_KEYS.has(k)&&!unfamiliar.includes('v:'+k)),modules:input.modules.filter(k=>M.has(k)),marks,bionic:input.bionic!==false,overrides},note:'备份已恢复。'};
 }
 try{
- const raw=localStorage.getItem(KEY);
+ let raw=localStorage.getItem(KEY),previousKey=false;
+ if(!raw){raw=localStorage.getItem(PREVIOUS_KEY);previousKey=!!raw;}
  if(raw){
-  try{stored=normalizeRecord(JSON.parse(raw)).record;}
+  try{stored=normalizeRecord(JSON.parse(raw)).record;migratedProgress=previousKey;migrationNotice=previousKey?'已沿用原2021版学习记录；新底色记录另存。':'';}
   catch(error){stored={};migratedProgress=true;migrationNotice='已忽略损坏或不匹配的本地记录。请导入有效备份；未读取其他年份的记录。';}
  }
 }catch(error){storageOK=false;}
 
-const state={known:new Set(Array.isArray(stored.known)?stored.known:[]),modules:new Set(Array.isArray(stored.modules)?stored.modules:[]),marks:new Set(Array.isArray(stored.marks)?stored.marks:[]),excluded:new Set(),bionic:stored.bionic!==false,overrides:Object.create(null)};
+const state={known:new Set(Array.isArray(stored.known)?stored.known:[]),modules:new Set(Array.isArray(stored.modules)?stored.modules:[]),marks:new Set(Array.isArray(stored.marks)?stored.marks:[]),unfamiliar:new Set(Array.isArray(stored.unfamiliar)?stored.unfamiliar:[]),excluded:new Set(),bionic:stored.bionic!==false,overrides:Object.create(null)};
 function validZRanges(zs){return Array.isArray(zs)&&zs.length<=1000&&zs.every(z=>z&&G.has(z.g)&&Number.isInteger(z.a)&&Number.isInteger(z.b)&&z.a>=0&&z.b>z.a&&z.b<=G.get(z.g).zh.length);}
 for(const [id,zs] of Object.entries(stored.overrides||{}))if(WORD.has(id)&&validZRanges(zs))state.overrides[id]=zs;
 for(const id of [...state.marks])if(!WORD.has(id)&&!ZINFO.has(id))state.marks.delete(id);
@@ -165,12 +200,45 @@ const ui={view:'ledger',text:0,q:'',poly:false,rare:false,hidden:false,onlyEn:fa
 const norm=s=>{const n=String(s).toLowerCase().replace(/[^a-z0-9]/g,'');return ({defence:'defense',criteria:'criterion',scrutinise:'scrutinize',favourable:'favorable',honour:'honor',endeavour:'endeavor',specialised:'specialized',sceptical:'skeptical',catalogue:'catalog',subsidise:'subsidize'})[n]||n;};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(s){$('toast').textContent=s;$('toast').classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').classList.remove('show'),2600);}
-function save(){try{localStorage.setItem(KEY,JSON.stringify({version:DATA.meta.alignmentVersion,known:[...state.known],modules:[...state.modules],marks:[...state.marks],excluded:[...state.excluded],bionic:state.bionic,overrides:state.overrides}));}catch(e){storageOK=false;toast('浏览器未允许本地保存，请用备份按钮保存记录。');}updateProgress();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({version:DATA.meta.alignmentVersion,unfamiliarVersion:1,unfamiliar:[...state.unfamiliar],known:[...state.known],modules:[...state.modules],marks:[...state.marks],excluded:[...state.excluded],bionic:state.bionic,overrides:state.overrides}));}catch(e){storageOK=false;toast('浏览器未允许本地保存，请用备份按钮保存记录。');}updateProgress();}
 function bio(s){return String(s).split(/([A-Za-z]+)/g).map(w=>{if(!/^[A-Za-z]+$/.test(w))return esc(w);let n=w.length===1?1:Math.max(1,Math.min(w.length-1,Math.floor(w.length*.45)));return '<b class="bp">'+esc(w.slice(0,n))+'</b>'+esc(w.slice(n));}).join('');}
 function sourceBadge(s){if(s.hasOtherYear||s.source==='PDF其他年份')return '<span class="origin">PDF后文</span>';return s.source==='词义校核'?'<span class="origin">校核义</span>':s.source==='考研常见补充义'?'<span class="origin">补充义</span>':'';}
 function senseButton(s,eid,current){return `<button class="sense ${current?'current':''}" data-sense="${s.id}" data-entry="${eid||''}" title="点击核心含义，回到对应剧情">${esc(s.label)}${sourceBadge(s)}</button>`;}
 function wordBadges(w,e){return `<span class="badges">${(e?e.rare:w.rare)?'<span class="badge rare">[僻]</span>':''}${w.poly?'<span class="badge poly">多义</span>':''}${Boolean(w.coreNote)?'<span class="badge">资料提示</span>':''}</span>`;}
 function matches(e){const w=W.get(e.key);if(ui.text&&e.text!==ui.text||ui.poly&&!w.poly||ui.rare&&!e.rare)return false;if(!ui.q)return true;const q=ui.q.toLowerCase(),n=norm(q);return e.word.toLowerCase().includes(q)||(n.length>0&&e.key.includes(n))||e.meaning.includes(q)||w.readingConcepts.some(c=>c.label.includes(q))||w.senses.some(s=>s.label.includes(q)||(s.aliases||[]).some(a=>a.includes(q)))||(w.earlierReadingConcepts||[]).some(c=>c.label.includes(q));}
+
+function unfamiliarButton(ref){
+ const on=state.unfamiliar.has(ref);
+ return `<button type="button" class="unfamiliar-toggle ${on?'active':''}" data-unfamiliar="${esc(ref)}" aria-pressed="${on}" title="只给英文加浅黄底色，不改字体颜色"><span class="highlight-swatch" aria-hidden="true"></span><span class="unfamiliar-text">${on?'不熟 · 取消':'标为不熟'}</span></button>`;
+}
+function tokenHasUnfamiliar(id){return state.unfamiliar.has(TOKEN_UNFAMILIAR_REF.get(id))||[...(TOKEN_VOCAB_REFS.get(id)||[])].some(ref=>state.unfamiliar.has(ref));}
+function applyUnfamiliar(){
+ document.querySelectorAll('[data-unfamiliar-key]').forEach(el=>el.classList.toggle('unfamiliar-fill',state.unfamiliar.has('v:'+el.dataset.unfamiliarKey)));
+ document.querySelectorAll('#storyArea .en .word-token').forEach(el=>el.classList.toggle('unfamiliar-fill',tokenHasUnfamiliar(el.dataset.markid)));
+ document.querySelectorAll('[data-unfamiliar]').forEach(button=>{const on=state.unfamiliar.has(button.dataset.unfamiliar);button.classList.toggle('active',on);button.setAttribute('aria-pressed',String(on));const label=button.querySelector('.unfamiliar-text');if(label)label.textContent=on?'不熟 · 取消':'标为不熟';});
+ if($('unfamiliarCount'))$('unfamiliarCount').textContent=String(state.unfamiliar.size);
+}
+function toggleUnfamiliar(ref){
+ if(!UNFAMILIAR_INDEX.has(ref))return;
+ if(state.unfamiliar.has(ref))state.unfamiliar.delete(ref);
+ else{state.unfamiliar.add(ref);const key=UNFAMILIAR_INDEX.get(ref).key;if(key)state.known.delete(key);}
+ save();
+}
+function openPlainWord(id){
+ const token=WORD.get(id),ref=TOKEN_UNFAMILIAR_REF.get(id);if(!token||!ref)return;
+ const item=UNFAMILIAR_INDEX.get(ref);if(item.key)return openWord(item.key);
+ const zh=counterpartText(id);
+ openModal(token.text,`<div class="word-mark-actions">${unfamiliarButton(ref)}<span class="context">只加英文底色</span></div><p class="context">本句对应：${zh?esc(zh):'没有独立译文；不补造词义。'}</p>`);
+ applyUnfamiliar();
+}
+function reviewUnfamiliar(){
+ const refs=[...state.unfamiliar];
+ let html=refs.length?`<p>共 ${refs.length} 个不熟标记。底色只加在英文上，不改变原字色、中文或已有下划线。</p>`:'<p>还没有不熟标记。</p>';
+ for(const ref of refs){const item=UNFAMILIAR_INDEX.get(ref);if(!item)continue;const module=M.get(L.get(item.jump)?.module),where=module?'Text '+module.text+' · '+module.title:'';html+=`<div class="unfamiliar-list-row"><div><span class="unfamiliar-list-word unfamiliar-fill" ${item.color?'style="color:'+item.color+'"':''}>${bio(item.label)}</span><p class="context">${esc(where)}</p></div><div class="actions"><button class="btn small" data-jump="${esc(item.jump)}">定位剧情</button><button class="btn small" data-remove-unfamiliar="${esc(ref)}">取消底色</button></div></div>`;}
+ if(refs.length)html+='<div class="actions"><button class="btn" id="clearUnfamiliar">清空底色标记</button></div>';
+ openModal('不熟单词 · 浅黄底色',html);applyUnfamiliar();
+}
+
 function renderLedger(){
  let html='',count=0;
  const reps=DATA.words.filter(w=>CARD_KEYS.has(w.key)).map(w=>E.get(w.entryIds.find(id=>!ui.text||E.get(id).text===ui.text))).filter(Boolean).filter(matches);
@@ -182,10 +250,10 @@ function renderLedger(){
    const n=String(w.cardIndex).padStart(3,'0');
    const otherTexts=[...new Set(w.entryIds.map(id=>E.get(id).text))].filter(t=>t!==e.text);
    html+=`<article class="vocab-card ledger-row ${known?'is-known':''}" id="row-${e.id}" data-row="${e.id}" style="--wc:${w.color}">
-    <div class="card-top"><div class="wordcell"><button class="wordbutton" data-word="${w.key}" data-entry="${e.id}">${esc(e.word)}</button>${wordBadges(w,e)}</div><span class="card-number">#${n}</span></div>
+    <div class="card-top"><div class="wordcell"><button class="wordbutton" data-word="${w.key}" data-entry="${e.id}"><span class="vocab-label" data-unfamiliar-key="${w.key}">${esc(e.word)}</span></button>${wordBadges(w,e)}</div><span class="card-number">#${n}</span></div>
     <div class="card-tags"><span>Text ${e.text} · ${MODULE_LABELS.get(e.module)}</span><span>${e.section==='options'?'选项':'原第 '+e.paragraph+' 段'}</span>${otherTexts.length?'<span>另见 Text '+otherTexts.join(' / ')+'</span>':''}</div>
     <div class="answer-wrap"><div class="meaningcell">${senses.map(s=>senseButton(s,e.id,s.current)).join('<span class="delimiter" aria-hidden="true">｜</span>')}</div><button class="reveal-prompt" data-reveal="${e.id}" tabindex="-1">点击显示词义</button></div>
-    <div class="card-actions"><button class="card-jump" data-jump="${e.mainTarget}" data-entry="${e.id}">定位剧情</button><button class="know ${known?'done':''}" data-known="${w.key}" aria-pressed="${known}">${known?'已掌握 · 撤销':'标记已掌握'}</button></div>
+    <div class="card-actions">${unfamiliarButton('v:'+w.key)}<button class="card-jump" data-jump="${e.mainTarget}" data-entry="${e.id}">定位剧情</button><button class="know ${known?'done':''}" data-known="${w.key}" aria-pressed="${known}">${known?'已掌握 · 撤销':'标记已掌握'}</button></div>
    </article>`;
   }
   html+='</div></section>';
@@ -193,10 +261,10 @@ function renderLedger(){
  const old=(ui.q||ui.rare||ui.poly)?DATA.words.filter(w=>w.previouslyLearned&&w.entryIds.some(id=>matches(E.get(id)))):[];
  if(!count&&!old.length)html='<p class="empty">'+(ui.rare&&DATA.meta.rareEntries===0?'原 PDF 的2021年部分没有 [僻] 标记；本页没有另外添加。':'没有符合条件的新词。清空搜索或关闭筛选后重试。')+'</p>';
  if(old.length){html+='<section class="review-results"><h2>2010–2020 已收录 · 本年复现</h2><p class="intro">这些词不重复建背诵卡片；点击单词查看2021当前用法。</p>';
- for(const w of old){const e=E.get(w.entryIds.find(id=>matches(E.get(id))));html+=`<div class="review-line"><button class="wordbutton" style="--wc:${w.color}" data-word="${w.key}" data-entry="${e.id}">${esc(w.word)}</button><span class="review-location">2021 · Text ${e.text}</span><span>${studySenses(w,e).map(s=>senseButton(s,e.id,s.current)).join('<span class="delimiter">｜</span>')}</span></div>`;}
+ for(const w of old){const e=E.get(w.entryIds.find(id=>matches(E.get(id))));html+=`<div class="review-line"><button class="wordbutton" style="--wc:${w.color}" data-word="${w.key}" data-entry="${e.id}"><span class="vocab-label" data-unfamiliar-key="${w.key}">${esc(w.word)}</span></button><span class="review-location">2021 · Text ${e.text}</span><span>${studySenses(w,e).map(s=>senseButton(s,e.id,s.current)).join('<span class="delimiter">｜</span>')}</span></div>`;}
  html+='</section>';}
  $('ledgerArea').innerHTML=html;$('ledgerView').classList.toggle('hidden-senses',ui.hidden);
- updateCardAccessibility();
+ updateCardAccessibility();applyUnfamiliar();
 }
 function updateCardAccessibility(){
  document.querySelectorAll('.vocab-card').forEach(card=>{
@@ -243,13 +311,13 @@ function revealTranslations(ids){if(ui.onlyEn){ui.onlyEn=false;document.body.cla
 function jumpTo(id,eid){const link=L.get(id);if(!link)return toast('该语义定位不存在，没有跳到其他不相关的剧情。');closeModal();cancelSelection();ui.focusEntry=eid||ui.focusEntry;if(ui.view==='ledger')ui.ledgerFilters={text:ui.text,q:ui.q,poly:ui.poly,rare:ui.rare};setView('stories');clearBookFilters();$('text-'+M.get(link.module).text).open=true;$('mod-'+link.module).open=true;revealTranslations([id]);document.querySelectorAll('.focus-hit').forEach(e=>e.classList.remove('focus-hit'));if(WORD.has(id)||ZINFO.has(id)){const vs=visualIDs([id]);document.querySelectorAll('#storyArea [data-markid]').forEach(e=>e.classList.toggle('focus-hit',vs.has(e.dataset.markid)));}else document.querySelectorAll(`[data-link="${id}"]`).forEach(e=>e.classList.add('focus-hit'));requestAnimationFrame(()=>{const el=$('storyArea').querySelector(`[data-markid="${id}"]`)||$('storyArea').querySelector(`[data-link="${id}"]`);if(el){const top=el.getBoundingClientRect().top+scrollY-document.querySelector('.bar').offsetHeight-28;window.scrollTo({top:Math.max(0,top),behavior:'auto'});}});}
 function jumpSense(sid,eid){const s=SENSE.get(sid),e=E.get(eid);if(!s)return;const id=anchorForSense(s,e);if(id)jumpTo(id,eid);else toast('这个核心没有本年剧情，不跳到不相关的位置。');}
 let modalReturn=null;
-function openModal(title,html){modalReturn=document.activeElement;$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('overlay').classList.add('open');$('closeModal').focus();}
+function openModal(title,html){modalReturn=document.activeElement;$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('overlay').classList.add('open');$('closeModal').focus();applyUnfamiliar();}
 function closeModal(){$('overlay').classList.remove('open');if(modalReturn&&document.contains(modalReturn))modalReturn.focus({preventScroll:true});}
 function sourceRows(){return '';} // Original source data stays internal; never duplicate it in study cards.
 function openWord(key,eid){
  const w=W.get(key);if(!w)return;
  const e=E.get(eid)||E.get(w.entryIds[0]),senses=studySenses(w,e);
- let html=(w.previouslyLearned?'<p class="notice">这个词已在2010—2020收录。本页仅供查阅2021复现，不重复新增卡片。</p>':'')+`<p class="context">Text ${e.text} · ${MODULE_LABELS.get(e.module)} · ${e.section==='options'?'选项':'原第 '+e.paragraph+' 段'}</p>`;
+ let html='<div class="word-mark-actions">'+unfamiliarButton('v:'+w.key)+'<span class="context">只加英文底色，原字色不变</span></div>'+(w.previouslyLearned?'<p class="notice">这个词已在2010—2020收录。本页仅供查阅2021复现，不重复新增卡片。</p>':'')+`<p class="context">Text ${e.text} · ${MODULE_LABELS.get(e.module)} · ${e.section==='options'?'选项':'原第 '+e.paragraph+' 段'}</p>`;
  for(const s of senses){
   const anchor=anchorForSense(s,e),o=O.get(anchor);if(!o)continue;
   const m=M.get(o.module);
@@ -283,8 +351,9 @@ function updateProgress(){
   b.textContent=on?'已掌握 · 撤销':'标记已掌握';b.setAttribute('aria-label',on?'取消已掌握':'标记已掌握');b.setAttribute('aria-pressed',String(on));
   b.closest('.vocab-card')?.classList.toggle('is-known',on);
  });
+ applyUnfamiliar();
 }
-function toggleKnown(key){if(state.known.has(key))state.known.delete(key);else state.known.add(key);save();}
+function toggleKnown(key){if(state.known.has(key))state.known.delete(key);else{state.known.add(key);state.unfamiliar.delete('v:'+key);}save();}
 let decks={},currentRandom=null,currentPool='all';
 function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function random(pool='all'){
@@ -294,7 +363,7 @@ function random(pool='all'){
  if(!decks[filterKey]?.length)decks[filterKey]=shuffle(list.map(w=>w.key));
  const w=W.get(decks[filterKey].pop());currentRandom=w.key;
  const e=E.get(w.entryIds.find(id=>!ui.text||E.get(id).text===ui.text));
- openModal(pool==='poly'?'随机 · 明显多义词':pool==='rare'?'随机熟词僻义':'随机抽词',`<div class="random-word" style="--wc:${w.color}">${bio(w.word)}</div><div class="actions"><button class="btn active" id="showAnswer">显示答案</button></div><div class="random-answer" id="randomAnswer">${studySenses(w,e).map(s=>senseButton(s,e.id,s.current)).join('<span class="delimiter">｜</span>')}<p class="context">出现：${[...new Set(w.entryIds.map(id=>'2021 Text '+E.get(id).text))].join(' / ')}</p></div><div class="actions"><button class="btn" id="randomKnown">记住了</button><button class="btn" id="randomAgain">待复习</button><button class="btn" id="nextRandom">下一词</button></div>`);
+ openModal(pool==='poly'?'随机 · 明显多义词':pool==='rare'?'随机熟词僻义':'随机抽词',`<div class="random-word" style="--wc:${w.color}"><span class="vocab-label" data-unfamiliar-key="${w.key}">${bio(w.word)}</span></div><div class="actions"><button class="btn active" id="showAnswer">显示答案</button></div><div class="random-answer" id="randomAnswer">${studySenses(w,e).map(s=>senseButton(s,e.id,s.current)).join('<span class="delimiter">｜</span>')}<p class="context">出现：${[...new Set(w.entryIds.map(id=>'2021 Text '+E.get(id).text))].join(' / ')}</p></div><div class="actions"><button class="btn" id="randomKnown">记住了</button>${unfamiliarButton('v:'+w.key)}<button class="btn" id="randomAgain">待复习</button><button class="btn" id="nextRandom">下一词</button></div>`);
 }
 // Stored marks are English word-occurrence IDs, or a Chinese-only character ID.
 function visualIDs(ids){const seen=new Set();for(const id of ids){if(WORD.has(id)){seen.add(id);zhIds(id).forEach(z=>seen.add(z));}else if(ZINFO.has(id))seen.add(id);}return seen;}
@@ -392,22 +461,26 @@ function reviewMarks(){
 }
 
 function exportState(){
- const obj={format:'exam-vocabulary-word-2021',version:DATA.meta.alignmentVersion,exported:new Date().toISOString(),known:[...state.known],modules:[...state.modules],marks:[...state.marks],bionic:state.bionic,overrides:state.overrides};
- const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='2021_单词划线与学习进度.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ const obj={format:'exam-vocabulary-word-2021',version:DATA.meta.alignmentVersion,unfamiliarVersion:1,unfamiliar:[...state.unfamiliar],exported:new Date().toISOString(),known:[...state.known],modules:[...state.modules],marks:[...state.marks],bionic:state.bionic,overrides:state.overrides};
+ const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='2021_底色划线与学习进度.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function importState(obj){
  if(!obj||obj.format!=='exam-vocabulary-word-2021')throw new Error('备份年份或格式不匹配，未改变当前记录。');
  const result=normalizeRecord(obj);const next=result.record;
- state.known=new Set(next.known);state.modules=new Set(next.modules);state.marks=new Set(next.marks);state.bionic=next.bionic;state.overrides=next.overrides;
- rebuildReverse();save();applyBionic();renderLedger();renderBooks();toast(result.note);
+ state.unfamiliar=new Set(next.unfamiliar||[]);state.known=new Set(next.known.filter(k=>!state.unfamiliar.has('v:'+k)));state.modules=new Set(next.modules);state.marks=new Set(next.marks);state.bionic=next.bionic;state.overrides=next.overrides;
+ rebuildReverse();save();applyBionic();renderLedger();renderBooks();applyUnfamiliar();toast(result.note);
 }
 
 function applyBionic(){document.body.classList.toggle('bionic-off',!state.bionic);$('bionicToggle').textContent='Bionic：'+(state.bionic?'开':'关');}
-$('ledgerTab').onclick=()=>setView('ledger');$('storiesTab').onclick=()=>setView('stories');$('backToLedger').onclick=()=>{if(ui.ledgerFilters){const f=ui.ledgerFilters;ui.poly=f.poly;ui.rare=f.rare;$('query').value=f.q;$('textFilter').value=String(f.text);filters();}setView('ledger',false);requestAnimationFrame(()=>window.scrollTo({top:ui.ledgerY,behavior:'auto'}));};$('textFilter').onchange=filters;$('query').oninput=()=>{clearTimeout(filters.timer);filters.timer=setTimeout(filters,140);};$('polyFilter').onclick=()=>{ui.poly=!ui.poly;filters();};$('rareFilter').onclick=()=>{ui.rare=!ui.rare;filters();};$('hideMeaning').onclick=()=>{ui.hidden=!ui.hidden;$('hideMeaning').textContent=ui.hidden?'显示词义':'遮住词义';$('hideMeaning').classList.toggle('active',ui.hidden);$('ledgerView').classList.toggle('hidden-senses',ui.hidden);updateCardAccessibility();};$('randomAll').onclick=()=>random('all');$('randomPoly').onclick=()=>random('poly');$('randomRare').onclick=()=>random('rare');$('savedMarks').onclick=reviewMarks;$('bionicToggle').onclick=()=>{state.bionic=!state.bionic;applyBionic();save();};$('onlyEnglish').onclick=()=>{ui.onlyEn=!ui.onlyEn;document.body.classList.toggle('only-en',ui.onlyEn);$('onlyEnglish').classList.toggle('active',ui.onlyEn);};$('expandTranslations').onclick=()=>{ui.onlyEn=false;document.body.classList.remove('only-en');$('onlyEnglish').classList.remove('active');document.querySelectorAll('.zh-wrap').forEach(d=>d.open=true);};$('collapseTranslations').onclick=()=>document.querySelectorAll('.zh-wrap').forEach(d=>d.open=false);$('closeModal').onclick=closeModal;$('overlay').onclick=e=>{if(e.target===$('overlay'))closeModal();};$('exportState').onclick=exportState;$('importState').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;if(f.size>5e6)throw new Error('备份文件过大。');importState(JSON.parse(await f.text()));}catch(err){toast(err.message||'读取备份失败。');}e.target.value='';};$('resetState').onclick=()=>{if(confirm('清空这版2021的掌握状态、复习记录和划线？')){state.known.clear();state.modules.clear();state.marks.clear();state.excluded.clear();state.overrides=Object.create(null);rebuildReverse();save();renderLedger();renderBooks();toast('已重置。');}};
+$('ledgerTab').onclick=()=>setView('ledger');$('storiesTab').onclick=()=>setView('stories');$('backToLedger').onclick=()=>{if(ui.ledgerFilters){const f=ui.ledgerFilters;ui.poly=f.poly;ui.rare=f.rare;$('query').value=f.q;$('textFilter').value=String(f.text);filters();}setView('ledger',false);requestAnimationFrame(()=>window.scrollTo({top:ui.ledgerY,behavior:'auto'}));};$('textFilter').onchange=filters;$('query').oninput=()=>{clearTimeout(filters.timer);filters.timer=setTimeout(filters,140);};$('polyFilter').onclick=()=>{ui.poly=!ui.poly;filters();};$('rareFilter').onclick=()=>{ui.rare=!ui.rare;filters();};$('hideMeaning').onclick=()=>{ui.hidden=!ui.hidden;$('hideMeaning').textContent=ui.hidden?'显示词义':'遮住词义';$('hideMeaning').classList.toggle('active',ui.hidden);$('ledgerView').classList.toggle('hidden-senses',ui.hidden);updateCardAccessibility();};$('randomAll').onclick=()=>random('all');$('randomPoly').onclick=()=>random('poly');$('randomRare').onclick=()=>random('rare');$('savedMarks').onclick=reviewMarks;$('unfamiliarList').onclick=reviewUnfamiliar;$('bionicToggle').onclick=()=>{state.bionic=!state.bionic;applyBionic();save();};$('onlyEnglish').onclick=()=>{ui.onlyEn=!ui.onlyEn;document.body.classList.toggle('only-en',ui.onlyEn);$('onlyEnglish').classList.toggle('active',ui.onlyEn);};$('expandTranslations').onclick=()=>{ui.onlyEn=false;document.body.classList.remove('only-en');$('onlyEnglish').classList.remove('active');document.querySelectorAll('.zh-wrap').forEach(d=>d.open=true);};$('collapseTranslations').onclick=()=>document.querySelectorAll('.zh-wrap').forEach(d=>d.open=false);$('closeModal').onclick=closeModal;$('overlay').onclick=e=>{if(e.target===$('overlay'))closeModal();};$('exportState').onclick=exportState;$('importState').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;if(f.size>5e6)throw new Error('备份文件过大。');importState(JSON.parse(await f.text()));}catch(err){toast(err.message||'读取备份失败。');}e.target.value='';};$('resetState').onclick=()=>{if(confirm('清空这版2021的掌握状态、复习记录、划线和不熟底色？')){state.known.clear();state.modules.clear();state.marks.clear();state.unfamiliar.clear();state.excluded.clear();state.overrides=Object.create(null);rebuildReverse();save();renderLedger();renderBooks();applyUnfamiliar();toast('已重置。');}};
 $('markMenu').addEventListener('pointerdown',e=>e.preventDefault());$('markMenu').addEventListener('mousedown',e=>e.preventDefault());$('confirmMark').onclick=confirmPending;$('adjustMark').onclick=beginAdjust;$('removeMark').onclick=()=>{commitMarks([...pending],false);cancelSelection(true);toast('已取消选定范围的划线。');};$('cancelMark').onclick=()=>cancelSelection(true);
 document.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};lastTouch=e.pointerType==='touch'||e.pointerType==='pen';if(!e.target.closest('#markMenu')&&!e.target.closest('.storytext'))cancelSelection();});document.addEventListener('touchstart',()=>{lastTouch=true;touchActive=true;},{passive:true});document.addEventListener('touchend',()=>{touchActive=false;clearTimeout(selTimer);selTimer=setTimeout(()=>{const s=selectedLinks();if(s)showSelection(s);},330);},{passive:true});document.addEventListener('selectionchange',()=>{if(!(lastTouch||matchMedia('(pointer:coarse)').matches)||$('overlay').classList.contains('open'))return;clearTimeout(selTimer);selTimer=setTimeout(()=>{if(touchActive)return;const s=selectedLinks();if(s)showSelection(s);else if(!manualBase&&!$('markMenu').matches(':hover'))cancelSelection();},330);});
 document.addEventListener('contextmenu',e=>{const s=selectedLinks();if(s&&e.target.closest('.storytext')){e.preventDefault();showSelection(s);}});
-document.addEventListener('click',e=>{if(e.target.closest('#markMenu'))return;const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y)>7;const selection=getSelection();if(e.target.closest('.storytext')&&(moved||selection&&!selection.isCollapsed))return;const sense=e.target.closest('[data-sense]');if(sense){e.preventDefault();jumpSense(sense.dataset.sense,sense.dataset.entry);return;}const row=e.target.closest('[data-row]');if(row&&ui.hidden&&!row.classList.contains('revealed')&&!e.target.closest('[data-known]')){row.classList.add('revealed');updateCardAccessibility();return;}const word=e.target.closest('[data-word]');if(word){e.preventDefault();openWord(word.dataset.word,word.dataset.entry||word.dataset.primary);return;}const known=e.target.closest('[data-known]');if(known){toggleKnown(known.dataset.known);return;}const md=e.target.closest('[data-module-done]');if(md){e.preventDefault();e.stopPropagation();const id=md.dataset.moduleDone;if(state.modules.has(id))state.modules.delete(id);else state.modules.add(id);md.textContent=state.modules.has(id)?'已复习':'标记复习';md.classList.toggle('done',state.modules.has(id));save();return;}const jump=e.target.closest('[data-jump]');if(jump){jumpTo(jump.dataset.jump,jump.dataset.entry);return;}const del=e.target.closest('[data-delete-mark]');if(del){commitMarks([del.dataset.deleteMark],false);reviewMarks();return;}switch(e.target.id){case 'showAnswer':$('randomAnswer').classList.add('shown');e.target.hidden=true;break;case 'nextRandom':random(currentPool);break;case 'randomKnown':if(currentRandom)state.known.add(currentRandom);save();renderLedger();random(currentPool);break;case 'randomAgain':if(currentRandom)state.known.delete(currentRandom);save();renderLedger();random(currentPool);break;case 'clearMarks':if(confirm('清空全部划线？')){state.marks.clear();state.excluded.clear();applyMarks();save();reviewMarks();}break;}});
+document.addEventListener('click',e=>{if(e.target.closest('#markMenu'))return;
+const highlight=e.target.closest('[data-unfamiliar]');if(highlight){e.preventDefault();toggleUnfamiliar(highlight.dataset.unfamiliar);return;}
+const removeHighlight=e.target.closest('[data-remove-unfamiliar]');if(removeHighlight){e.preventDefault();state.unfamiliar.delete(removeHighlight.dataset.removeUnfamiliar);save();reviewUnfamiliar();return;}
+if(e.target.id==='clearUnfamiliar'){if(confirm('只清空不熟底色？已有下划线、掌握和复习记录不会删除。')){state.unfamiliar.clear();save();reviewUnfamiliar();}return;}
+const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y)>7;const selection=getSelection();if(e.target.closest('.storytext')&&(moved||selection&&!selection.isCollapsed))return;const sense=e.target.closest('[data-sense]');if(sense){e.preventDefault();jumpSense(sense.dataset.sense,sense.dataset.entry);return;}const row=e.target.closest('[data-row]');if(row&&ui.hidden&&!row.classList.contains('revealed')&&!e.target.closest('[data-known]')&&!e.target.closest('[data-unfamiliar]')){row.classList.add('revealed');updateCardAccessibility();return;}const word=e.target.closest('[data-word]');if(word){e.preventDefault();openWord(word.dataset.word,word.dataset.entry||word.dataset.primary);return;}const plainToken=e.target.closest('#storyArea .en .word-token');if(plainToken){e.preventDefault();openPlainWord(plainToken.dataset.markid);return;}const known=e.target.closest('[data-known]');if(known){toggleKnown(known.dataset.known);return;}const md=e.target.closest('[data-module-done]');if(md){e.preventDefault();e.stopPropagation();const id=md.dataset.moduleDone;if(state.modules.has(id))state.modules.delete(id);else state.modules.add(id);md.textContent=state.modules.has(id)?'已复习':'标记复习';md.classList.toggle('done',state.modules.has(id));save();return;}const jump=e.target.closest('[data-jump]');if(jump){jumpTo(jump.dataset.jump,jump.dataset.entry);return;}const del=e.target.closest('[data-delete-mark]');if(del){commitMarks([del.dataset.deleteMark],false);reviewMarks();return;}switch(e.target.id){case 'showAnswer':$('randomAnswer').classList.add('shown');e.target.hidden=true;break;case 'nextRandom':random(currentPool);break;case 'randomKnown':if(currentRandom){state.known.add(currentRandom);state.unfamiliar.delete('v:'+currentRandom);}save();renderLedger();random(currentPool);break;case 'randomAgain':if(currentRandom)state.known.delete(currentRandom);save();renderLedger();random(currentPool);break;case 'clearMarks':if(confirm('清空全部划线？')){state.marks.clear();state.excluded.clear();applyMarks();save();reviewMarks();}break;}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){cancelSelection(true);closeModal();}if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('target')){e.preventDefault();openWord(e.target.dataset.word,e.target.dataset.primary);}if(e.key==='Tab'&&$('overlay').classList.contains('open')){const focusable=[...$('overlay').querySelectorAll('button:not([hidden]),summary,input')].filter(x=>x.getClientRects().length);const first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}});window.addEventListener('resize',()=>{if(savedRange)positionMenu(savedRange.getBoundingClientRect());});window.addEventListener('scroll',()=>{if(savedRange)positionMenu(savedRange.getBoundingClientRect());},{passive:true});
 $('counts').innerHTML=`<span><strong>${DATA.meta.newWords}</strong> 张新词卡片</span><span><strong>${DATA.meta.reviewWords}</strong> 个旧词不重复建卡</span><span><strong>${DATA.meta.totalEntries}</strong> 条原词保留</span><span><strong>${DATA.meta.rareEntries}</strong> 条 [僻]</span>`;
 $('auditBody').innerHTML=`<p><b>本版范围：</b>2021 Text 1–4，原PDF第82—89页。192条原记录，四个Text为40／41／63／48条；[僻]为bear、institute、pen。原词形、释义、页码、段落、正文／选项均保留。原PDF的缺字和异常标注另在相应词的资料提示中交代。</p>
@@ -434,8 +507,8 @@ function positionMorePanel(){
 $('moreTools').addEventListener('toggle',positionMorePanel);
 window.addEventListener('resize',positionMorePanel);
 window.addEventListener('scroll',positionMorePanel,{passive:true});
-renderLedger();renderBooks();applyBionic();updateProgress();if(!storageOK)toast('本地存储不可用，离开前请导出备份。');
+renderLedger();renderBooks();applyBionic();updateProgress();applyUnfamiliar();if(!storageOK)toast('本地存储不可用，离开前请导出备份。');
 // Test helpers expose local operations only; they make no requests.
 if(migratedProgress)toast(migrationNotice);
-window.APP={wordLinks:WORD,reverse:REVERSE,zhIds,visualIDs,counterpartText,confirmPending,beginAdjust,getPending:()=>({pending:[...pending],manualBase,manualZh}),data:DATA,state,ui,links:L,selectedLinks,showSelection,commitMarks,jumpSense,jumpTo,random,exportState,importState,applyMarks,studySenses,renderLedger,concepts:CONCEPT,senses:SENSE,anchorForSense,openWord};
+window.APP={wordLinks:WORD,reverse:REVERSE,zhIds,visualIDs,counterpartText,confirmPending,beginAdjust,getPending:()=>({pending:[...pending],manualBase,manualZh}),data:DATA,state,ui,links:L,selectedLinks,showSelection,commitMarks,jumpSense,jumpTo,random,exportState,importState,applyMarks,studySenses,renderLedger,unfamiliarIndex:UNFAMILIAR_INDEX,toggleUnfamiliar,applyUnfamiliar,reviewUnfamiliar,openPlainWord,tokenHasUnfamiliar,concepts:CONCEPT,senses:SENSE,anchorForSense,openWord};
 </script></body></html>
